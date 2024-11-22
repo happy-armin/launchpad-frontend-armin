@@ -1,0 +1,161 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 60px;
+  background-color: #282C2C;
+  z-index: 9999;
+  transition: all 0.3s ease-in-out;
+}
+.header.is-sticky {
+  box-shadow: 0 6px 6px #191E1E;
+}
+.header .header-right-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
+}
+@media (max-width: 960px) {
+  .header .header-right-bar {
+    position: fixed;
+    right: 10px;
+    top: -3px;
+  }
+}
+.header__logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 150px;
+  height: 60px;
+  margin-left: 10px;
+  text-decoration: none;
+  color: #fecb5b;
+  font-weight: 700;
+  font-size: 24px;
+  text-align: center;
+}
+@media (max-width: 960px) {
+  .header__logo {
+    display: none;
+  }
+}
+.header__nav {
+  margin-right: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.header__nav ul {
+  list-style: none;
+  padding: 0;
+}
+.header__nav ul li {
+  display: inline;
+  margin-inline: 15px;
+}
+.header__nav ul li a {
+  font-size: 18px;
+  text-decoration: none;
+  color: #A6A6A6;
+  font-family: Clash Grotesk;
+  transition: all 0.3s ease-in-out;
+}
+.header__nav ul li a:hover {
+  color: #FFFFFF;
+}
+@media (max-width: 960px) {
+  .header__nav {
+    display: none;
+  }
+}
+.header .hamburger-menu {
+  display: none;
+  cursor: pointer;
+}
+@media (max-width: 960px) {
+  .header .hamburger-menu {
+    display: block;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 20px;
+    height: 20px;
+    transition: all 0.3s ease-in-out;
+  }
+}
+.header .hamburger-menu .hamburger {
+  position: relative;
+  width: 20px;
+  height: 20px;
+}
+.header .hamburger-menu .hamburger::before, .header .hamburger-menu .hamburger::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #FFFFFF;
+  transition: all 0.3s ease;
+}
+.header .hamburger-menu .hamburger::before {
+  top: 0;
+  transform: translateY(2px);
+}
+.header .hamburger-menu .hamburger::after {
+  bottom: 0;
+  transform: translateY(-2px);
+}
+.header .hamburger-menu .hamburger.open::before {
+  transform: rotate(45deg) translate(6px, 6px);
+}
+.header .hamburger-menu .hamburger.open::after {
+  transform: rotate(-45deg) translate(6px, -6px);
+}
+.header .hamburger-menu .hamburger.open .line {
+  display: none;
+}
+.header .hamburger-menu .hamburger .line {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #FFFFFF;
+  width: 100%;
+  height: 2px;
+  transition: all 0.3s ease;
+}
+.header .hamburger-menu .menu {
+  position: fixed;
+  left: 0;
+  top: 60px;
+  width: 100%;
+  background-color: #191E1E;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.5s ease;
+  padding-block: 10px;
+  gap: 15px;
+}
+.header .hamburger-menu .menu.fade-in {
+  opacity: 1;
+  visibility: visible;
+}
+.header .hamburger-menu .menu.fade-out {
+  opacity: 0;
+  visibility: hidden;
+}
+.header .hamburger-menu .menu .menu-item {
+  font-size: 18px;
+  text-decoration: none;
+  color: #A6A6A6;
+  font-family: Clash Grotesk;
+  transition: all 0.3s ease-in-out;
+}
+.header .hamburger-menu .menu .menu-item:hover {
+  color: #FFFFFF;
+}

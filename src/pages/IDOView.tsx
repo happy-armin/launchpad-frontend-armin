@@ -5,11 +5,16 @@ import { gql, useQuery } from '@apollo/client';
 import '../styles/pages/ido-view.scss';
 import { ClaimablePools, ComingPools, EndedPools, OpenPools, PoolItem } from '../contracts/filter-pool';
 import getTokenInfo, { TokenInfo } from '../contracts/tokenService';
+import { PoolProgressInfo } from '../types/types';
+import { getPoolContract } from '../contracts/IDOPool';
+import { Contract } from 'ethers';
 
 const GET_POOLS = gql`
   query GetPools {
     pools {
       id
+      holder
+      address
       rewardToken
       price
       buyToken
@@ -28,6 +33,7 @@ export default function IDOView() {
 
   const [tokenInfo, setTokenInfo] = useState<Array<TokenInfo> | null>(null);
   const [bTokenInfo, setBTokenInfo] = useState<Array<TokenInfo> | null>(null);
+  const [progressInfo, setProgressInfo] = useState<Array<PoolProgressInfo> | null>(null);
 
   const [fullLoading, setFullLoading] = useState<boolean>(false);
 
@@ -40,6 +46,7 @@ export default function IDOView() {
   const getData = async () => {
     const poolItems = data.pools.map((pool: PoolItem) => ({
       id: pool.id,
+      address: pool.address,
       rewardToken: pool.rewardToken,
       price: pool.price,
       buyToken: pool.buyToken,
@@ -53,25 +60,36 @@ export default function IDOView() {
 
     let rewardTokenInfo = [] as Array<TokenInfo>;
     let buyTokenInfo = [] as Array<TokenInfo>;
+    let progInfo = [] as Array<PoolProgressInfo>;
 
     const tokenInfoPromise = poolItems.map(async (pool: PoolItem) => {
+      // get token info from address in the pool
       const rinfo: TokenInfo = await getTokenInfo(pool.rewardToken);
       const binfo: TokenInfo = await getTokenInfo(pool.buyToken);
       rewardTokenInfo.push(rinfo);
       buyTokenInfo.push(binfo);
+
+      // get pool progress info from address in the pool
+      const poolContract: Contract | undefined = await getPoolContract(pool.address);
+      if (poolContract !== undefined) {
+        const stakedAmount = await poolContract.getTotalStakedAmount();
+        const progress = Number((BigInt(stakedAmount) * BigInt(100)) / BigInt(pool.hardCap));
+        progInfo.push({ id: pool.id, progress: progress });
+      }
     });
 
     await Promise.all(tokenInfoPromise);
 
     setTokenInfo(rewardTokenInfo);
     setBTokenInfo(buyTokenInfo);
+    setProgressInfo(progInfo);
   };
 
   useEffect(() => {
-    if (!!tokenInfo && !!bTokenInfo) {
+    if (!!tokenInfo && !!bTokenInfo && !!progressInfo) {
       setFullLoading(true);
     }
-  }, [tokenInfo, bTokenInfo]);
+  }, [tokenInfo, bTokenInfo, progressInfo]);
 
   return (
     <div className="ido-container">
@@ -91,6 +109,7 @@ export default function IDOView() {
               {OpenPools(data.pools).map((pool: PoolItem, index: number) => (
                 <IDOCard
                   key={index}
+                  poolId={pool.id}
                   tokenName={tokenInfo?.find((tokenInfo) => tokenInfo.address === pool.rewardToken)?.name}
                   tokenSymbol={tokenInfo?.find((tokenInfo) => tokenInfo.address === pool.rewardToken)?.symbol}
                   ipfsUrl={pool.ipfsUrl}
@@ -113,6 +132,7 @@ export default function IDOView() {
               {ClaimablePools(data.pools).map((pool: PoolItem, index: number) => (
                 <IDOCard
                   key={index}
+                  poolId={pool.id}
                   tokenName={tokenInfo?.find((tokenInfo) => tokenInfo.address === pool.rewardToken)?.name}
                   tokenSymbol={tokenInfo?.find((tokenInfo) => tokenInfo.address === pool.rewardToken)?.symbol}
                   ipfsUrl={pool.ipfsUrl}
@@ -135,6 +155,7 @@ export default function IDOView() {
               {ComingPools(data.pools).map((pool: PoolItem, index: number) => (
                 <IDOCard
                   key={index}
+                  poolId={pool.id}
                   tokenName={tokenInfo?.find((tokenInfo) => tokenInfo.address === pool.rewardToken)?.name}
                   tokenSymbol={tokenInfo?.find((tokenInfo) => tokenInfo.address === pool.rewardToken)?.symbol}
                   ipfsUrl={pool.ipfsUrl}
@@ -157,6 +178,7 @@ export default function IDOView() {
               {EndedPools(data.pools).map((pool: PoolItem, index: number) => (
                 <IDOCard
                   key={index}
+                  poolId={pool.id}
                   tokenName={tokenInfo?.find((tokenInfo) => tokenInfo.address === pool.rewardToken)?.name}
                   tokenSymbol={tokenInfo?.find((tokenInfo) => tokenInfo.address === pool.rewardToken)?.symbol}
                   ipfsUrl={pool.ipfsUrl}
