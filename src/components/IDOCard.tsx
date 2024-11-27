@@ -14,7 +14,7 @@ interface CardProps {
   tokenCap: bigint | undefined;
   softCap: bigint;
   hardCap: bigint;
-  progress: number;
+  progress: number | undefined;
 }
 
 export default function IDOCard(props: CardProps) {
@@ -51,9 +51,11 @@ export default function IDOCard(props: CardProps) {
       <div className="card-progress">
         <div className="top-detail">
           <span>Progress</span>
-          <span>0%</span>
+          <span>{props.progress}%</span>
         </div>
-        <div className="progress"></div>
+        <div className="progress">
+          <div className="progress-fill" style={{ width: `${props.progress ? props.progress : 0}%` }}></div>
+        </div>
       </div>
     </Link>
   );

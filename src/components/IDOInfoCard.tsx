@@ -50,9 +50,11 @@ export default function IDOInfoCard(props: CardProps) {
       <div className="card-progress">
         <div className="top-detail">
           <span>Progress</span>
-          <span>0%</span>
+          <span>{props.progress}%</span>
         </div>
-        <div className="progress"></div>
+        <div className="progress">
+          <div className="progress-fill" style={{ width: `${props.progress ? props.progress : 0}%` }}></div>
+        </div>
       </div>
     </div>
   );

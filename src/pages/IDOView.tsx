@@ -119,7 +119,7 @@ export default function IDOView() {
                   tokenCap={tokenInfo?.find((tokenInfo) => tokenInfo.address === pool.rewardToken)?.supply}
                   softCap={pool.softCap}
                   hardCap={pool.hardCap}
-                  progress={0}
+                  progress={progressInfo?.find((info) => info.id === pool.id)?.progress}
                 />
               ))}
             </div>
@@ -142,7 +142,7 @@ export default function IDOView() {
                   tokenCap={tokenInfo?.find((tokenInfo) => tokenInfo.address === pool.rewardToken)?.supply}
                   softCap={pool.softCap}
                   hardCap={pool.hardCap}
-                  progress={0}
+                  progress={progressInfo?.find((info) => info.id === pool.id)?.progress}
                 />
               ))}
             </div>
@@ -165,7 +165,7 @@ export default function IDOView() {
                   tokenCap={tokenInfo?.find((tokenInfo) => tokenInfo.address === pool.rewardToken)?.supply}
                   softCap={pool.softCap}
                   hardCap={pool.hardCap}
-                  progress={0}
+                  progress={progressInfo?.find((info) => info.id === pool.id)?.progress}
                 />
               ))}
             </div>
@@ -188,7 +188,7 @@ export default function IDOView() {
                   tokenCap={tokenInfo?.find((tokenInfo) => tokenInfo.address === pool.rewardToken)?.supply}
                   softCap={pool.softCap}
                   hardCap={pool.hardCap}
-                  progress={0}
+                  progress={progressInfo?.find((info) => info.id === pool.id)?.progress}
                 />
               ))}
             </div>

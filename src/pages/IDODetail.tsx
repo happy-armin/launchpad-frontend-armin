@@ -11,7 +11,7 @@ import '../styles/pages/ido-detail.scss';
 import { Contract } from 'ethers';
 import { getPoolContract } from '../contracts/IDOPool';
 import { TimeStamps } from '../types/types';
-import { time } from 'console';
+import WithdrawCard from '../components/WithdrawCard';
 
 const GET_POOL = gql`
   query GetPool($id: ID!) {
@@ -41,6 +41,7 @@ export default function IDODetail() {
   const [timeInfo, setTimeInfo] = useState<TimeStamps | undefined>(undefined);
   const [poolState, setPoolState] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
+  const [progressInfo, setProgressInfo] = useState<number>(0);
 
   const { loading, error, data } = useQuery<{ pool: PoolItem }>(GET_POOL, { variables: { id: poolId.poolId } });
 
@@ -91,6 +92,11 @@ export default function IDODetail() {
         } else if (timeStamps.claimTimestamp < Math.floor(Date.now() / 1000)) {
           setPoolState('Claimable');
         }
+
+        // calculate pool progress
+        const stakedAmount = await poolContract.getTotalStakedAmount();
+        const progress = (BigInt(stakedAmount) * BigInt(100)) / BigInt(poolItem.hardCap ? poolItem.hardCap : 0);
+        setProgressInfo(Number(progress));
       }
     }
   };
@@ -110,7 +116,7 @@ export default function IDODetail() {
     if (isLoaded()) {
       setIsLoading(false);
     }
-  }, [poolInfo, rewardInfo, buyInfo, timeInfo]);
+  }, [poolInfo, rewardInfo, buyInfo, timeInfo, progressInfo]);
 
   return (
     <div className="detail-container">
@@ -138,7 +144,7 @@ export default function IDODetail() {
                 tokenCap={rewardInfo.supply}
                 softCap={poolInfo.softCap}
                 hardCap={poolInfo.hardCap}
-                progress={0}
+                progress={progressInfo}
               />
             </div>
             <div className="detail-main">
@@ -160,7 +166,7 @@ export default function IDODetail() {
                   startTime={Number(timeInfo.startTimestamp)}
                   endTime={Number(timeInfo.endTimestamp)}
                   claimTime={Number(timeInfo.claimTimestamp)}
-                  progress={0}
+                  progress={progressInfo}
                 />
               </div>
               <div className="detail-action">
@@ -170,6 +176,16 @@ export default function IDODetail() {
                   endTime={getDateFromStamp(Number(timeInfo.endTimestamp))}
                   claimTime={getDateFromStamp(Number(timeInfo.claimTimestamp))}
                   setValue={setTimeInfo}
+                />
+              </div>
+              <div className="detail-action">
+                <WithdrawCard
+                  address={poolInfo.address}
+                  buyTokenAddress={poolInfo.buyToken}
+                  buyTokenSymbol={buyInfo.symbol}
+                  isSuccessed={
+                    BigInt(poolInfo.hardCap) * BigInt(progressInfo) >= BigInt(poolInfo.softCap) * BigInt(100)
+                  }
                 />
               </div>
             </div>
